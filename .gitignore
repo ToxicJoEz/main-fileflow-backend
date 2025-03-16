@@ -1,0 +1,26 @@
+# Node modules
+node_modules/
+
+# Environment variables (keep sensitive data out of your repo)
+.env
+
+# Log files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Optional: cache directories
+.npm/
+.cache/
+
+# Optional: coverage directory if you're running tests
+coverage/
+
+# IDE or editor settings (optional)
+.vscode/
+.idea/
