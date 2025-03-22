@@ -4,13 +4,14 @@ const mongoose = require("mongoose");
 require("dotenv").config(); // Loads environment variables from .env
 
 const authRoutes = require("./routes/auth");
+const profileRouter = require("./routes/profile");
 
 const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Enable CORS (adjust configuration as needed)
+// Enable CORS for all routes (placed early)
 app.use(cors());
 
 // Connect to MongoDB using the connection string in .env (e.g., DB_URL)
@@ -23,11 +24,17 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-// Use the authentication routes
-// All routes defined in auth.js will be available from the root URL
+// Mount the authentication routes at the root.
+// Example: /register, /login, etc.
 app.use("/", authRoutes);
 
-// A simple test route to ensure the server is running
+// Mount the profile routes at the root so that, for example, 
+// a route defined as router.get('/profile', ...) in profileRouter 
+// is accessible via http://localhost:3000/profile.
+app.use("/", profileRouter);
+
+// A simple test route to ensure the server is running.
+// This route will only be hit if no other route matches.
 app.get("/", (req, res) => {
   res.send("Hello from FileFlow Backend!");
 });
