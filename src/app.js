@@ -17,10 +17,7 @@ app.use(cors());
 // Connect to MongoDB using the connection string in .env (e.g., DB_URL)
 const DB_URL = process.env.DB_URL;
 mongoose
-  .connect(DB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(DB_URL)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -28,11 +25,11 @@ mongoose
 // Example: /register, /login, etc.
 app.use("/", authRoutes);
 
-// Mount the profile routes at the root so that, for example, 
-// a route defined as router.get('/profile', ...) in profileRouter 
+// Mount the profile routes at the root so that, for example,
+// a route defined as router.get('/profile', ...) in profileRouter
 // is accessible via http://localhost:3000/profile.
 app.use("/", profileRouter);
-useNewUrlParser
+
 // A simple test route to ensure the server is running.
 // This route will only be hit if no other route matches.
 app.get("/", (req, res) => {
