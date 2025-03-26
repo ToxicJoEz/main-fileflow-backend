@@ -32,7 +32,7 @@ app.use("/", authRoutes);
 // a route defined as router.get('/profile', ...) in profileRouter 
 // is accessible via http://localhost:3000/profile.
 app.use("/", profileRouter);
-
+useNewUrlParser
 // A simple test route to ensure the server is running.
 // This route will only be hit if no other route matches.
 app.get("/", (req, res) => {
