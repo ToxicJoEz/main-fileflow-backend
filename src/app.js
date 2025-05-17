@@ -12,7 +12,11 @@ const app = express();
 app.use(express.json());
 
 // Enable CORS for all routes (placed early)
-app.use(cors());
+app.use(
+  cors({
+    origin: "*", // allow all domains
+  })
+);
 
 // Connect to MongoDB using the connection string in .env (e.g., DB_URL)
 const DB_URL = process.env.DB_URL;
