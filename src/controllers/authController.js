@@ -89,7 +89,11 @@ const loginUser = async (req, res) => {
       }
 
       const encodedToken = encodeURIComponent(token);
-      return res.redirect(`${redirect_uri}?token=${encodedToken}`);
+
+      return res.status(200).json({
+        token,
+        redirect: `${redirect_uri}?token=${encodedToken}`,
+      });
     }
 
     // Return the token
