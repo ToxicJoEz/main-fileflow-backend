@@ -30,6 +30,9 @@ const registerUser = async (req, res) => {
       username,
       email,
       password: hashedPassword,
+      plan: "free", // Default plan
+      planStartDate: new Date(), // Set the start date to now
+      paymentStatus: "unpaid", // Default payment status
     });
 
     await newUser.save();
@@ -45,7 +48,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     // Extract email and password from the request body
-    const { email, password } = req.body;
+    const { email, password, redirect_uri } = req.body;
 
     // Validate input
     if (!email || !password) {
@@ -74,6 +77,20 @@ const loginUser = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" } // The token will expire in 1 hour
     );
+
+    if (redirect_uri) {
+      const allowedRedirects = [
+        "http://localhost:5000/callback",
+        "http://127.0.0.1:5000/callback",
+      ];
+
+      if (!allowedRedirects.includes(redirect_uri)) {
+        return res.status(400).json({ message: "Invalid redirect URI" });
+      }
+
+      const encodedToken = encodeURIComponent(token);
+      return res.redirect(`${redirect_uri}?token=${encodedToken}`);
+    }
 
     // Return the token
     return res.status(200).json({ token });

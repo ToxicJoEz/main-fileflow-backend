@@ -24,6 +24,30 @@ const UserSchema = new mongoose.Schema(
       default: "https://i.imgur.com/4OfYHou.png",
       trim: true,
     },
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
+    },
+    plan: {
+      type: String,
+      enum: ["free", "pro", "plus", "premium"],
+      default: "free",
+    },
+    planStartDate: {
+      type: Date,
+    },
+    planEndDate: {
+      type: Date,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["paid", "unpaid", "expired"],
+      default: "unpaid",
+    },
   },
   { timestamps: true }
 );
