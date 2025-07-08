@@ -33,4 +33,18 @@ router.post("/log-search", authenticateUser, async (req, res) => {
   }
 });
 
+// GET search logs for the authenticated user
+router.get("/search-logs", authenticateUser, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const logs = await SearchLog.find({ userId }).sort({ createdAt: -1 });
+
+    res.status(200).json({ logs });
+  } catch (error) {
+    console.error("Error fetching search logs:", error);
+    res.status(500).json({ message: "Server error while fetching logs." });
+  }
+});
+
 module.exports = router;
