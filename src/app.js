@@ -5,6 +5,7 @@ require("dotenv").config(); // Loads environment variables from .env
 
 const authRoutes = require("./routes/auth");
 const profileRouter = require("./routes/profile");
+const searchLogRoutes = require("./routes/searchLog");
 
 const app = express();
 
@@ -33,6 +34,8 @@ app.use("/", authRoutes);
 // a route defined as router.get('/profile', ...) in profileRouter
 // is accessible via http://localhost:3000/profile.
 app.use("/", profileRouter);
+
+app.use("/", searchLogRoutes); // Add this under other routes
 
 // A simple test route to ensure the server is running.
 // This route will only be hit if no other route matches.
