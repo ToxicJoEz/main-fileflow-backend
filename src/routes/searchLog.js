@@ -1,8 +1,9 @@
 // routes/searchLog.js
-const express = require("express");
+import express from "express";
+import SearchLog from "../models/SearchLog.js";
+import authenticateUser from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const SearchLog = require("../models/SearchLog");
-const authenticateUser = require("../middleware/authMiddleware");
 
 router.post("/log-search", authenticateUser, async (req, res) => {
   try {
@@ -47,4 +48,4 @@ router.get("/search-logs", authenticateUser, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

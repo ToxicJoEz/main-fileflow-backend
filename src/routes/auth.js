@@ -1,11 +1,11 @@
-const express = require("express");
-const router = express.Router();
-const { registerUser, loginUser } = require("../controllers/authController");
-const crypto = require("crypto"); // built-in module to generate a secure token
-const bcrypt = require("bcrypt");
+import express from "express";
+import { registerUser, loginUser } from "../controllers/authController.js";
+import crypto from "crypto"; // built-in module to generate a secure token
+import bcrypt from "bcrypt";
+import User from "../models/User.js"; // you already have this model
+import transporter from "../config/emailTransporter.js"; // we'll make this next
 
-const User = require("../models/User"); // you already have this model
-const transporter = require("../config/emailTransporter"); // we'll make this next
+const router = express.Router();
 
 // Registration endpoint
 router.post("/register", registerUser);
@@ -107,4 +107,4 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

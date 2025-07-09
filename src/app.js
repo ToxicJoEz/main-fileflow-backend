@@ -1,11 +1,12 @@
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
-require("dotenv").config(); // Loads environment variables from .env
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import authRoutes from "./routes/auth.js";
+import profileRouter from "./routes/profile.js";
+import searchLogRoutes from "./routes/searchLog.js";
 
-const authRoutes = require("./routes/auth");
-const profileRouter = require("./routes/profile");
-const searchLogRoutes = require("./routes/searchLog");
+dotenv.config();
 
 const app = express();
 
@@ -44,7 +45,7 @@ app.get("/", (req, res) => {
 });
 
 // Start the server on port 3000 or use the port defined in environment variables
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

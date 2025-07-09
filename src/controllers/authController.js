@@ -1,9 +1,9 @@
-const User = require("../models/User");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken"); // Import jsonwebtoken for token generation
+import User from "../models/User.js"; // Import the User model
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken"; // Import jsonwebtoken for token generation
 
 // Registration function (already exists)
-const registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
@@ -45,7 +45,7 @@ const registerUser = async (req, res) => {
 };
 
 // New Login Function
-const loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
     // Extract email and password from the request body
     const { email, password, redirect_uri } = req.body;
@@ -103,5 +103,3 @@ const loginUser = async (req, res) => {
     return res.status(500).json({ message: "Server error." });
   }
 };
-
-module.exports = { registerUser, loginUser };
