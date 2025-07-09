@@ -100,7 +100,7 @@ export const forgotPassword = async (req, res) => {
     user.resetPasswordExpires = Date.now() + 3600000;
     await user.save();
 
-    const resetLink = `http://localhost:5173/reset-password?token=${token}`;
+    const resetLink = `https://file-flow-front-end.vercel.app/reset-password?token=${token}`;
     const mailOptions = {
       from: "youssef_aast2007@yahoo.com",
       to: user.email,
