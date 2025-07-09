@@ -1,14 +1,14 @@
-// routes/searchLog.js
-import express from "express";
+// src/controllers/searchLogController.js
+
 import SearchLog from "../models/SearchLog.js";
-import authenticateUser from "../middleware/authMiddleware.js";
 
-const router = express.Router();
-
-router.post("/log-search", authenticateUser, async (req, res) => {
+/**
+ * Log a keyword search
+ */
+export const logSearch = async (req, res) => {
   try {
     const { keyword, resultsCount, fileNames } = req.body;
-    const userId = req.user.userId; // Securely get userId from JWT
+    const userId = req.user.userId;
 
     if (
       !keyword ||
@@ -32,20 +32,20 @@ router.post("/log-search", authenticateUser, async (req, res) => {
     console.error("Error logging search:", error);
     res.status(500).json({ message: "Server error while logging search." });
   }
-});
+};
 
-// GET search logs for the authenticated user
-router.get("/search-logs", authenticateUser, async (req, res) => {
+/**
+ * Get search logs for the authenticated user
+ */
+export const getSearchLogs = async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    const logs = await SearchLog.find({ userId }).sort({ createdAt: -1 });
+    const logs = await SearchLog.find({ userId }).sort({ searchedAt: -1 });
 
     res.status(200).json({ logs });
   } catch (error) {
     console.error("Error fetching search logs:", error);
     res.status(500).json({ message: "Server error while fetching logs." });
   }
-});
-
-export default router;
+};

@@ -1,3 +1,5 @@
+// src/models/User.js
+
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
@@ -5,13 +7,13 @@ const UserSchema = new mongoose.Schema(
     username: {
       type: String,
       required: [true, "Username is required"],
-      unique: true, // Ensure no duplicate usernames
+      unique: true,
       trim: true,
     },
     email: {
       type: String,
       required: [true, "Email is required"],
-      unique: true, // Ensure no duplicate emails
+      unique: true,
       trim: true,
       lowercase: true,
     },
@@ -37,12 +39,8 @@ const UserSchema = new mongoose.Schema(
       enum: ["free", "pro", "plus", "premium"],
       default: "free",
     },
-    planStartDate: {
-      type: Date,
-    },
-    planEndDate: {
-      type: Date,
-    },
+    planStartDate: Date,
+    planEndDate: Date,
     paymentStatus: {
       type: String,
       enum: ["paid", "unpaid", "expired"],

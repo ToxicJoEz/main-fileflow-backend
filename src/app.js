@@ -1,51 +1,41 @@
+// src/app.js
+
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth.js";
-import profileRouter from "./routes/profile.js";
-import searchLogRoutes from "./routes/searchLog.js";
 
+// Route imports
+import authRoutes from "./routes/authRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
+import searchRoutes from "./routes/searchRoutes.js";
+
+// Load environment variables
 dotenv.config();
 
+// Create express app
 const app = express();
 
-// Middleware to parse JSON bodies
+// Global middleware
+app.use(cors());
 app.use(express.json());
 
-// Enable CORS for all routes (placed early)
-app.use(
-  cors({
-    origin: "*", // allow all domains
-  })
-);
-
-// Connect to MongoDB using the connection string in .env (e.g., DB_URL)
-const DB_URL = process.env.DB_URL;
+// Connect to MongoDB
 mongoose
-  .connect(DB_URL)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .connect(process.env.DB_URL)
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Mount the authentication routes at the root.
-// Example: /register, /login, etc.
+// Use route handlers
 app.use("/", authRoutes);
+app.use("/", profileRoutes);
+app.use("/", searchRoutes);
 
-// Mount the profile routes at the root so that, for example,
-// a route defined as router.get('/profile', ...) in profileRouter
-// is accessible via http://localhost:3000/profile.
-app.use("/", profileRouter);
-
-app.use("/", searchLogRoutes); // Add this under other routes
-
-// A simple test route to ensure the server is running.
-// This route will only be hit if no other route matches.
+// Root route (for testing)
 app.get("/", (req, res) => {
   res.send("Hello from FileFlow Backend!");
 });
 
-// Start the server on port 3000 or use the port defined in environment variables
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
