@@ -1,5 +1,4 @@
 // src/models/User.js
-
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
@@ -10,6 +9,7 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -17,30 +17,32 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+
     password: {
       type: String,
       required: [true, "Password is required"],
     },
+
     avatar: {
       type: String,
       default: "https://i.imgur.com/4OfYHou.png",
       trim: true,
     },
-    resetPasswordToken: {
-      type: String,
-      default: null,
-    },
-    resetPasswordExpires: {
-      type: Date,
-      default: null,
-    },
+
+    // Password‑reset fields
+    resetPasswordToken: { type: String, default: null },
+    resetPasswordExpires: { type: Date, default: null },
+
+    // 🔗 NEW: reference to the Plan collection
     plan: {
-      type: String,
-      enum: ["free", "pro", "plus", "premium"],
-      default: "free",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Plan",
+      required: true,
     },
-    planStartDate: Date,
-    planEndDate: Date,
+
+    planStartDate: { type: Date, default: Date.now },
+    planEndDate: { type: Date, default: null },
+
     paymentStatus: {
       type: String,
       enum: ["paid", "unpaid", "expired"],

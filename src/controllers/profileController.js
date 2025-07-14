@@ -8,7 +8,9 @@ import { validationResult } from "express-validator";
  */
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select("-password");
+    const user = await User.findById(req.user.userId)
+      .select("-password")
+      .populate("plan"); // Populate full plan details
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
@@ -39,7 +41,9 @@ export const updateProfile = async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
-    }).select("-password");
+    })
+      .select("-password")
+      .populate("plan"); // Also populate after update
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found." });

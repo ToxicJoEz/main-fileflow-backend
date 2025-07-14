@@ -1,35 +1,47 @@
 // src/controllers/authController.js
 
 import User from "../models/User.js";
+import Plan from "../models/Plan.js"; // ← NEW
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import transporter from "../config/emailTransporter.js";
 import generateToken from "../utils/generateToken.js";
 
-// Register
+/* ------------------------------------------------------------------ */
+/* Register                                                          */
+/* ------------------------------------------------------------------ */
 export const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    if (!username || !email || !password)
+    if (!username || !email || !password) {
       return res
         .status(400)
         .json({ message: "Username, email, and password are required." });
+    }
 
-    const existingUserByUsername = await User.findOne({ username });
-    if (existingUserByUsername)
+    if (await User.findOne({ username })) {
       return res.status(409).json({ message: "Username already exists." });
-
-    const existingUserByEmail = await User.findOne({ email });
-    if (existingUserByEmail)
+    }
+    if (await User.findOne({ email })) {
       return res.status(409).json({ message: "Email already exists." });
+    }
 
+    /* 1️⃣ Lookup “free” plan ID */
+    const freePlan = await Plan.findOne({ name: "free" });
+    if (!freePlan) {
+      return res.status(500).json({ message: "Free plan not found." });
+    }
+
+    /* 2️⃣ Create user linked to that plan */
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = new User({
       username,
       email,
       password: hashedPassword,
-      plan: "free",
+      plan: freePlan._id, // ObjectId reference
       planStartDate: new Date(),
+      planEndDate: null,
       paymentStatus: "unpaid",
     });
 
@@ -41,14 +53,17 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// Login
+/* ------------------------------------------------------------------ */
+/* Login                                                              */
+/* ------------------------------------------------------------------ */
 export const loginUser = async (req, res) => {
   try {
     const { email, password, redirect_uri } = req.body;
-    if (!email || !password)
+    if (!email || !password) {
       return res
         .status(400)
         .json({ message: "Email and password are required." });
+    }
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid credentials." });
@@ -57,7 +72,7 @@ export const loginUser = async (req, res) => {
     if (!passwordMatch)
       return res.status(401).json({ message: "Invalid credentials." });
 
-    const token = generateToken(user); // use utility
+    const token = generateToken(user);
 
     if (redirect_uri) {
       const allowedRedirects = [
@@ -82,7 +97,9 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// Forgot Password
+/* ------------------------------------------------------------------ */
+/* Forgot Password                                                    */
+/* ------------------------------------------------------------------ */
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ message: "Email is required" });
@@ -123,7 +140,9 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-// Reset Password
+/* ------------------------------------------------------------------ */
+/* Reset Password                                                     */
+/* ------------------------------------------------------------------ */
 export const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
   if (!token || !newPassword)
