@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import transporter from "../config/emailTransporter.js";
 import generateToken from "../utils/generateToken.js";
-import Setting from "../models/Setting.js";
+import Settings from "../models/Setting.js";
 
 /* ------------------------------------------------------------------ */
 /* Register                                                          */
@@ -178,7 +178,7 @@ export const resetPassword = async (req, res) => {
 export const getSettings = async (req, res) => {
   try {
     // Assuming i only have one settings document
-    const settings = await Setting.findOne({});
+    const settings = await Settings.findOne({});
     if (!settings) {
       return res.status(404).json({ message: "Settings not found." });
     }
