@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import transporter from "../config/emailTransporter.js";
 import generateToken from "../utils/generateToken.js";
+import Setting from "../models/Setting.js";
 
 /* ------------------------------------------------------------------ */
 /* Register                                                          */
@@ -167,6 +168,23 @@ export const resetPassword = async (req, res) => {
     res.status(200).json({ message: "Password has been reset successfully" });
   } catch (error) {
     console.error("Reset password error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ------------------------------------------------------------------ */
+/* Get current app settings                                           */
+/* ------------------------------------------------------------------ */
+export const getSettings = async (req, res) => {
+  try {
+    // Assuming i only have one settings document
+    const settings = await Setting.findOne({});
+    if (!settings) {
+      return res.status(404).json({ message: "Settings not found." });
+    }
+    res.status(200).json(settings);
+  } catch (error) {
+    console.error("Error fetching settings:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
