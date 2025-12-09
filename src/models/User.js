@@ -48,6 +48,12 @@ const UserSchema = new mongoose.Schema(
       enum: ["paid", "unpaid", "expired"],
       default: "unpaid",
     },
+
+    // Account active status
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

@@ -43,7 +43,8 @@ export const registerUser = async (req, res) => {
       plan: freePlan._id, // ObjectId reference
       planStartDate: new Date(),
       planEndDate: null,
-      paymentStatus: "unpaid",
+      isActive: true, // Explicitly set to active on registration
+      paymentStatus: "active",
     });
 
     await newUser.save();
@@ -116,6 +117,10 @@ export const loginAppUser = async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch)
       return res.status(401).json({ message: "Invalid credentials." });
+
+    // Check if the user account is active
+    if (!user.isActive)
+      return res.status(403).json({ message: "Account is not active. Please contact support." });
 
     // Version check
     const settings = await Setting.findOne({});
