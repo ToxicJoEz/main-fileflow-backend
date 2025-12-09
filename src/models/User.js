@@ -45,7 +45,7 @@ const UserSchema = new mongoose.Schema(
 
     paymentStatus: {
       type: String,
-      enum: ["paid", "unpaid", "expired"],
+      enum: ["paid", "unpaid", "expired", "active"],
       default: "unpaid",
     },
 
