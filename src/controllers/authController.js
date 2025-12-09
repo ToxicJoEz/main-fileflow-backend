@@ -127,7 +127,7 @@ export const loginAppUser = async (req, res) => {
       return res.status(426).json({
         message: "App update required",
         latestVersion: settings.latestVersion,
-        downloadLink: "https://github.com/ToxicJoEz/FileFlow-User-App/releases/download/app/FileFlow.User.Application.3.rar", // replace with actual link
+        downloadLink: "https://github.com/ToxicJoEz/FileFlow-User-App/releases/download/app/FileFlow.User.Application.0.1.0.rar", // replace with actual link
       });
     }
 
