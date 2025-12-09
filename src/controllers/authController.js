@@ -118,9 +118,19 @@ export const loginAppUser = async (req, res) => {
     if (!passwordMatch)
       return res.status(401).json({ message: "Invalid credentials." });
 
-    // Check if the user account is active
-    if (!user.isActive)
-      return res.status(403).json({ message: "Account is not active. Please contact support." });
+    // Check the user's active status
+    if (user.isActive === false) {
+      return res.status(403).json({ message: "Account is deactivated." });
+    }
+
+    // Handle cases where the status isn't explicitly set (e.g., older user documents)
+    if (typeof user.isActive === "undefined") {
+      return res
+        .status(403)
+        .json({
+          message: "Account status is unverified. Please contact support.",
+        });
+    }
 
     // Version check
     const settings = await Setting.findOne({});
@@ -132,7 +142,8 @@ export const loginAppUser = async (req, res) => {
       return res.status(426).json({
         message: "App update required",
         latestVersion: settings.latestVersion,
-        downloadLink: "https://github.com/ToxicJoEz/FileFlow-User-App/releases/download/app/FileFlow.User.Application.0.1.0.rar", // replace with actual link
+        downloadLink:
+          "https://github.com/ToxicJoEz/FileFlow-User-App/releases/download/app/FileFlow.User.Application.0.1.0.rar", // replace with actual link
       });
     }
 
