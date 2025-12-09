@@ -99,6 +99,48 @@ export const loginUser = async (req, res) => {
 };
 
 /* ------------------------------------------------------------------ */
+/* App Login                                                          */
+/* ------------------------------------------------------------------ */
+export const loginAppUser = async (req, res) => {
+  try {
+    const { email, password, appVersion } = req.body;
+    if (!email || !password || !appVersion) {
+      return res
+        .status(400)
+        .json({ message: "Email, password, and appVersion are required." });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Invalid credentials." });
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch)
+      return res.status(401).json({ message: "Invalid credentials." });
+
+    // Version check
+    const settings = await Setting.findOne({});
+    if (!settings) {
+      return res.status(500).json({ message: "Server settings not found." });
+    }
+
+    if (settings.forceUpdate && settings.latestVersion !== appVersion) {
+      return res.status(426).json({
+        message: "App update required",
+        latestVersion: settings.latestVersion,
+        downloadLink: "https://github.com/ToxicJoEz/FileFlow-User-App/releases/download/app/FileFlow.User.Application.3.rar", // replace with actual link
+      });
+    }
+
+    const token = generateToken(user);
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error("Error in loginAppUser:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+};
+
+/* ------------------------------------------------------------------ */
 /* Forgot Password                                                    */
 /* ------------------------------------------------------------------ */
 export const forgotPassword = async (req, res) => {
