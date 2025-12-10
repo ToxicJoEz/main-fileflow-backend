@@ -7,64 +7,45 @@ import SearchLog from "../models/SearchLog.js";
  */
 export const logSearch = async (req, res) => {
   try {
+    // Destructure the new, precise data structure from the request body
     const {
-      keyword,          // OLD (single keyword)
-      keywords,         // NEW (array of keywords)
-      resultsCount,     // OLD (total matches)
-      totalMatches,     // NEW (total matches)
-      fileNames,        // OLD (simple array of file names)
-      files             // NEW (detailed per-file match data)
+      keywords,
+      totalMatchesFound,
+      totalFilesSearched,
+      totalKeywordsSearched,
+      files,
     } = req.body;
 
     const userId = req.user.userId;
 
     // --- VALIDATION ---
     if (!userId) {
-      return res.status(401).json({ message: "Unauthorized." });
+      return res.status(401).json({ message: "Unauthorized. User ID is missing." });
     }
 
-    // Accept either "keyword" OR "keywords"
-    if (!keyword && (!keywords || !Array.isArray(keywords))) {
-      return res.status(400).json({ message: "Keyword(s) missing." });
+    // Validate the presence and type of the new fields
+    if (!Array.isArray(keywords) || keywords.length === 0) {
+      return res.status(400).json({ message: "Keywords array is missing or empty." });
     }
-
-    // Accept either "resultsCount" OR "totalMatches"
-    const matchCount = typeof totalMatches === "number" ? totalMatches : resultsCount;
-
-    if (typeof matchCount !== "number") {
-      return res.status(400).json({ message: "Invalid match count." });
+    if (typeof totalMatchesFound !== "number") {
+      return res.status(400).json({ message: "totalMatchesFound must be a number." });
     }
-
-    // Accept old "fileNames" or new "files" structure
-    const fileData =
-      Array.isArray(files) && files.length > 0
-        ? files
-        : fileNames?.map((name) => ({
-            fileName: name,
-            matches: [], // old system had no detailed matches
-          })) || [];
+    if (typeof totalFilesSearched !== "number") {
+      return res.status(400).json({ message: "totalFilesSearched must be a number." });
+    }
+    if (typeof totalKeywordsSearched !== "number") {
+      return res.status(400).json({ message: "totalKeywordsSearched must be a number." });
+    }
 
     // --- BUILD FINAL LOG OBJECT ---
+    // The data structure from the body now directly matches the Mongoose model.
     const newLog = new SearchLog({
       userId,
-
-      // NEW system → use array
-      keywords: Array.isArray(keywords)
-        ? keywords
-        : keyword
-        ? [keyword]
-        : [],
-
-      // NEW totalMatches
-      totalMatches: matchCount,
-
-      // NEW file structure
-      files: fileData,
-
-      // OLD fallback fields (kept to avoid breaking frontend)
-      keyword: keyword || null,
-      resultsCount: matchCount,
-      fileNames: fileNames || [],
+      keywords,
+      totalMatchesFound,
+      totalFilesSearched,
+      totalKeywordsSearched,
+      files: files || [], // Use provided files or default to an empty array
     });
 
     await newLog.save();

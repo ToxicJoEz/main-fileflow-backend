@@ -18,29 +18,36 @@ const searchLogSchema = new mongoose.Schema(
       },
     ],
 
-    // Total matches across all keywords & files
-    totalMatches: {
+    // Summary counts from the search operation
+    totalMatchesFound: {
+      type: Number,
+      required: true,
+    },
+    totalFilesSearched: {
+      type: Number,
+      required: true,
+    },
+    totalKeywordsSearched: {
       type: Number,
       required: true,
     },
 
-    // Per-file, per-keyword result details
+    // Detailed results per file
     files: [
       {
         fileName: { type: String, required: true },
-
+        total_matches: { type: Number, required: true },
+        originalName: { type: String }, // From multer
+        storedName: { type: String }, // From multer
+        
+        // Each individual match found in the file
         matches: [
           {
+            line: { type: String, required: true },
+            line_number: { type: mongoose.Schema.Types.Mixed, required: true }, // Can be number or string
+            match_start: { type: Number, required: true },
+            match_end: { type: Number, required: true },
             keyword: { type: String, required: true },
-            count: { type: Number, required: true },
-
-            // Occurrences like "found on page 3 with context..."
-            occurrences: [
-              {
-                page: { type: Number },
-                context: { type: String }, // supports highlighted text
-              },
-            ],
           },
         ],
       },
