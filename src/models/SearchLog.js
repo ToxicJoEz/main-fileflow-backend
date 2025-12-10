@@ -44,7 +44,7 @@ const searchLogSchema = new mongoose.Schema(
         matches: [
           {
             line: { type: String, required: true },
-            line_number: { type: mongoose.Schema.Types.Mixed, required: true }, // Can be number or string
+            line_number: { type: mongoose.Schema.Types.Mixed }, // Can be number or string, but is now optional
             match_start: { type: Number, required: true },
             match_end: { type: Number, required: true },
             keyword: { type: String, required: true },
