@@ -37,6 +37,23 @@ export const logSearch = async (req, res) => {
       return res.status(400).json({ message: "totalKeywordsSearched must be a number." });
     }
 
+    // Optional: Deeper validation to ensure files array has the correct structure
+    if (files && Array.isArray(files)) {
+      for (const file of files) {
+        if (typeof file.total_matches !== 'number') {
+          return res.status(400).json({ message: `File '${file.originalName}' is missing a valid 'total_matches' count.` });
+        }
+        if (file.matches && Array.isArray(file.matches)) {
+          for (const match of file.matches) {
+            if (!match.keyword) {
+              return res.status(400).json({ message: `A match in file '${file.originalName}' is missing a 'keyword'.` });
+            }
+          }
+        }
+      }
+    }
+
+
     // --- BUILD FINAL LOG OBJECT ---
     // The data structure from the body now directly matches the Mongoose model.
     const newLog = new SearchLog({

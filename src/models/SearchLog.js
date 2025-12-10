@@ -35,7 +35,7 @@ const searchLogSchema = new mongoose.Schema(
     // Detailed results per file
     files: [
       {
-        fileName: { type: String, required: true },
+        fileName: { type: String },
         total_matches: { type: Number, required: true },
         originalName: { type: String }, // From multer
         storedName: { type: String }, // From multer
@@ -43,10 +43,10 @@ const searchLogSchema = new mongoose.Schema(
         // Each individual match found in the file
         matches: [
           {
-            line: { type: String, required: true },
+            line: { type: String },
             line_number: { type: mongoose.Schema.Types.Mixed }, // Can be number or string, but is now optional
-            match_start: { type: Number, required: true },
-            match_end: { type: Number, required: true },
+            match_start: { type: Number },
+            match_end: { type: Number },
             keyword: { type: String, required: true },
           },
         ],
