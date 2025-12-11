@@ -4,8 +4,9 @@ import User from "../models/User.js";
 import Plan from "../models/Plan.js"; // ← NEW
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import transporter from "../config/emailTransporter.js";
-import generateToken from "../utils/generateToken.js";
+import jwt from "jsonwebtoken";
+import transporter from "../config/emailTransporter.js"; 
+import generateTokens from "../utils/generateToken.js";
 import Setting from "../models/Setting.js";
 
 /* ------------------------------------------------------------------ */
@@ -74,25 +75,26 @@ export const loginUser = async (req, res) => {
     if (!passwordMatch)
       return res.status(401).json({ message: "Invalid credentials." });
 
-    const token = generateToken(user);
+    const { accessToken, refreshToken } = generateTokens(user);
 
     if (redirect_uri) {
       const allowedRedirects = [
         "http://localhost:5000/callback",
         "http://127.0.0.1:5000/callback",
       ];
-      if (!allowedRedirects.includes(redirect_uri)) {
+      if (!allowedRedirects.includes(redirect_uri)) { 
         return res.status(400).json({ message: "Invalid redirect URI" });
       }
 
-      const encodedToken = encodeURIComponent(token);
+      const encodedToken = encodeURIComponent(accessToken);
       return res.status(200).json({
-        token,
+        accessToken,
+        refreshToken,
         redirect: `${redirect_uri}?token=${encodedToken}`,
       });
     }
 
-    res.status(200).json({ token });
+    res.status(200).json({ accessToken, refreshToken });
   } catch (error) {
     console.error("Error in loginUser:", error);
     res.status(500).json({ message: "Server error." });
@@ -147,12 +149,52 @@ export const loginAppUser = async (req, res) => {
       });
     }
 
-    const token = generateToken(user);
+    const { accessToken, refreshToken } = generateTokens(user);
 
-    res.status(200).json({ token });
+    res.status(200).json({ accessToken, refreshToken });
   } catch (error) {
     console.error("Error in loginAppUser:", error);
     res.status(500).json({ message: "Server error." });
+  }
+};
+
+/* ------------------------------------------------------------------ */
+/* Refresh Access Token                                               */
+/* ------------------------------------------------------------------ */
+export const refreshAccessToken = async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: "Refresh token is required." });
+  }
+
+  try {
+    // 1. Verify the refresh token using its specific secret
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+    // 2. Find the user from the token's payload
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      // This could happen if the user was deleted after the token was issued
+      return res
+        .status(403)
+        .json({ message: "Invalid refresh token. User not found." });
+    }
+
+    // 3. Generate a new access token (but not a new refresh token)
+    const newAccessToken = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    res.status(200).json({ accessToken: newAccessToken });
+  } catch (error) {
+    // Handle specific JWT errors for better client-side logic
+    return res
+      .status(403)
+      .json({ message: "Invalid or expired refresh token. Please log in again." });
   }
 };
 
