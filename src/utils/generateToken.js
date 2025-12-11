@@ -11,7 +11,7 @@ const generateTokens = (user) => {
   const accessToken = jwt.sign(
     { userId: user._id, email: user.email }, // Payload for access token
     process.env.JWT_SECRET, // Secret for access token
-    { expiresIn: "15m" } // Expiration time
+    { expiresIn: "3h" } // Expiration time
   );
   // Refresh token with a longer expiration (e.g., 1 day)
   const refreshToken = jwt.sign({ userId: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "1d" });
