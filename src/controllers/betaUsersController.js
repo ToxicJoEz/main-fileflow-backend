@@ -1,4 +1,4 @@
-import BetaUser from "../models/BetaUser.js";
+import BetaUser from "../models/betaUser.js";
 import transporter from "../config/emailTransporter.js";
 
 export const simpleController = async (req, res) => {
