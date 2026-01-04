@@ -9,6 +9,7 @@ import "dotenv/config"; // Load environment variables
 import authRoutes from "./routes/authRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
+import betaRoutes from "./routes/betaUsersRoutes.js";
 
 // Create express app
 const app = express();
@@ -30,6 +31,7 @@ mongoose
 app.use("/", authRoutes);
 app.use("/", profileRoutes);
 app.use("/", searchRoutes);
+app.use("/", betaRoutes);
 
 // Root route (for testing)
 app.get("/", (req, res) => {
