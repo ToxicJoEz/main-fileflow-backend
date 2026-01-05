@@ -10,6 +10,7 @@ import authRoutes from "./routes/authRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import betaRoutes from "./routes/betaUsersRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 
 // Create express app
 const app = express();
@@ -32,6 +33,7 @@ app.use("/", authRoutes);
 app.use("/", profileRoutes);
 app.use("/", searchRoutes);
 app.use("/", betaRoutes);
+app.use("/", contactRoutes);
 
 // Root route (for testing)
 app.get("/", (req, res) => {
