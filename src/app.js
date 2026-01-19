@@ -18,7 +18,6 @@ const app = express();
 // Global middleware
 app.use(cors());
 // Increase payload size limit to handle large search logs
-// The default is '100kb', which is too small.
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
@@ -40,6 +39,13 @@ app.get("/", (req, res) => {
   res.send("Hello from FileFlow Backend!");
 });
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// Start server — Railway requires this exact setup
+const PORT = process.env.PORT;
+if (!PORT) {
+  console.error("❌ PORT is not set. Railway injects this automatically.");
+  process.exit(1);
+}
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

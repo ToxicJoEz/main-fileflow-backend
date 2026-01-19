@@ -1,18 +1,24 @@
 import BetaUser from "../models/betaUser.js";
-import transporter from "../config/emailTransporter.js";
+// import transporter from "../config/emailTransporter.js";
 
 export const simpleController = async (req, res) => {
   try {
     const { name, email } = req.body;
 
+    // Check if user already exists
     const existingUser = await BetaUser.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists" });
     }
 
+    // Save new beta user
     const newUser = new BetaUser({ name, email });
     await newUser.save();
 
+    // -----------------------------
+    // Email sending is temporarily disabled for testing
+    // -----------------------------
+    /*
     try {
       const mailOptions = {
         from: `"File Flow" <${process.env.EMAIL_USER}>`,
@@ -41,7 +47,9 @@ export const simpleController = async (req, res) => {
       console.error("Email sending failed:", emailError);
       // user is still saved even if email fails
     }
+    */
 
+    // Respond to frontend immediately
     res.status(201).json({
       message:
         "Success! We have received your information. You will be contacted shortly with details on how to access the closed beta.",
