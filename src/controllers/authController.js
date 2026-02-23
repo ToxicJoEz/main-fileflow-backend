@@ -107,6 +107,7 @@ export const loginUser = async (req, res) => {
 export const loginAppUser = async (req, res) => {
   try {
     const { email, password, appVersion } = req.body;
+
     if (!email || !password || !appVersion) {
       return res
         .status(400)
@@ -127,31 +128,40 @@ export const loginAppUser = async (req, res) => {
 
     // Handle cases where the status isn't explicitly set (e.g., older user documents)
     if (typeof user.isActive === "undefined") {
-      return res
-        .status(403)
-        .json({
-          message: "Account status is unverified. Please contact support.",
-        });
+      return res.status(403).json({
+        message: "Account status is unverified. Please contact support.",
+      });
     }
 
-    // Version check
+    // Get settings
     const settings = await Setting.findOne({});
     if (!settings) {
       return res.status(500).json({ message: "Server settings not found." });
     }
 
+    // App version check
     if (settings.forceUpdate && settings.latestVersion !== appVersion) {
       return res.status(426).json({
         message: "App update required",
         latestVersion: settings.latestVersion,
         downloadLink:
-          "https://github.com/ToxicJoEz/FileFlow-User-App/releases/download/app/FileFlow.User.Application.0.1.0.rar", // replace with actual link
+          "https://github.com/ToxicJoEz/FileFlow-User-App/releases/download/app/FileFlow.User.Application.0.1.0.rar",
       });
     }
 
+    // 🔹 Policy version check (NEW)
+    const latestPolicyVersion = settings.latestPolicyVersion;
+    const mustAcceptPolicy =
+      !user.terms?.version ||
+      user.terms.version !== latestPolicyVersion;
+
     const { accessToken, refreshToken } = generateTokens(user);
 
-    res.status(200).json({ accessToken, refreshToken });
+    res.status(200).json({
+      accessToken,
+      refreshToken,
+      mustAcceptPolicy,
+    });
   } catch (error) {
     console.error("Error in loginAppUser:", error);
     res.status(500).json({ message: "Server error." });

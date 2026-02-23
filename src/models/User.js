@@ -54,8 +54,22 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    terms: {
+      accepted: {
+        type: Boolean,
+        default: false,
+      },
+      version: {
+        type: String,
+        default: null,
+      },
+      acceptedAt: {
+        type: Date,
+        default: null,
+      },
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("User", UserSchema);
