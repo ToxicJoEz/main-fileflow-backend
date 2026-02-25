@@ -102,9 +102,7 @@ export const acceptPolicyAndTerms = async (req, res) => {
         "terms.acceptedAt": new Date(),
       },
       { new: true }
-    )
-      .select("-password")
-      .populate("plan");
+    );
 
     if (!updatedUser) {
       return res.status(404).json({
@@ -112,9 +110,10 @@ export const acceptPolicyAndTerms = async (req, res) => {
       });
     }
 
+    // Return only success message and version
     return res.status(200).json({
       message: "Policy and Terms accepted successfully.",
-      user: updatedUser,
+      version: latestPolicyVersion,
     });
   } catch (error) {
     console.error("Error in acceptPolicyAndTerms:", error);
