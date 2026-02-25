@@ -126,7 +126,6 @@ export const loginAppUser = async (req, res) => {
       return res.status(403).json({ message: "Account is deactivated." });
     }
 
-    // Handle cases where the status isn't explicitly set (e.g., older user documents)
     if (typeof user.isActive === "undefined") {
       return res.status(403).json({
         message: "Account status is unverified. Please contact support.",
@@ -151,9 +150,9 @@ export const loginAppUser = async (req, res) => {
 
     // 🔹 Policy version check (NEW)
     const latestPolicyVersion = settings.latestPolicyVersion;
+    const userPolicyVersion = user.terms?.version || null;
     const mustAcceptPolicy =
-      !user.terms?.version ||
-      user.terms.version !== latestPolicyVersion;
+      !userPolicyVersion || userPolicyVersion !== latestPolicyVersion;
 
     const { accessToken, refreshToken } = generateTokens(user);
 
@@ -161,6 +160,8 @@ export const loginAppUser = async (req, res) => {
       accessToken,
       refreshToken,
       mustAcceptPolicy,
+      latestPolicyVersion,   // for debugging
+      userPolicyVersion,     // for debugging
     });
   } catch (error) {
     console.error("Error in loginAppUser:", error);
